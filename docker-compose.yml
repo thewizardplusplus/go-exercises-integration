@@ -33,6 +33,17 @@ services:
       - --
       - /usr/local/bin/go-exercises-backend
 
+  go-exercises-frontend:
+    build: ./go-exercises-frontend
+    volumes:
+      - ./go-exercises-backend/static:/node/src/go-exercises-frontend/build-external
+    command:
+      - cp
+      - --recursive
+      - --no-target-directory
+      - /node/src/go-exercises-frontend/build
+      - /node/src/go-exercises-frontend/build-external
+
   db:
     image: postgres:13.2-alpine
     environment:
