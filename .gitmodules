@@ -1,3 +1,6 @@
 [submodule "go-exercises-worker"]
 	path = go-exercises-worker
 	url = https://github.com/thewizardplusplus/go-exercises-worker
+[submodule "go-exercises-backend"]
+	path = go-exercises-backend
+	url = https://github.com/thewizardplusplus/go-exercises-backend
