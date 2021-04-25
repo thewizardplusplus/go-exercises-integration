@@ -1,0 +1,44 @@
+version: "3"
+services:
+  go-exercises-backend:
+    build: ./go-exercises-backend
+    environment:
+      SERVER_ADDRESS: ":8080"
+      SERVER_STATIC_FILE_PATH: /var/www/go-exercises-backend
+      STORAGE_ADDRESS: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+      MESSAGE_BROKER_ADDRESS: amqp://rabbitmq:rabbitmq@rabbitmq:5672
+    ports:
+      - 8080:8080
+    volumes:
+      - ./go-exercises-backend/static:/var/www/go-exercises-backend
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - db:5432
+      - --
+      - /usr/local/bin/wait-for-it.sh
+      - rabbitmq:5672
+      - --
+      - /usr/local/bin/go-exercises-backend
+
+  db:
+    image: postgres:13.2-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer:4.8.0
+    ports:
+      - 9090:8080
+
+  rabbitmq:
+    image: rabbitmq:3.8.14-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    ports:
+      - 5672:5672 # RabbitMQ server
+      - 15672:15672 # RabbitMQ management plugin
