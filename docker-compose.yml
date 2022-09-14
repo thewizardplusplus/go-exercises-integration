@@ -66,3 +66,52 @@ services:
     ports:
       - 5672:5672 # RabbitMQ server
       - 15672:15672 # RabbitMQ management plugin
+
+  go-exercises-worker-asyncapi-generator:
+    image: asyncapi/generator:1.9.0
+    command:
+      - --debug
+      - --install
+      - --output=/app/async-api
+      - --force-write
+      - /app/async_api.yaml
+      - "@asyncapi/html-template@0.24.8"
+    volumes:
+      - ./go-exercises-worker/docs/async_api.yaml:/app/async_api.yaml
+      - ./go-exercises-worker/docs/async-api:/app/async-api
+
+  go-exercises-worker-asyncapi:
+    image: nginx:1.21.1-alpine
+    ports:
+      - 9091:80
+    volumes:
+      - ./go-exercises-worker/docs/async-api:/usr/share/nginx/html
+
+  go-exercises-backend-asyncapi-generator:
+    image: asyncapi/generator:1.9.0
+    command:
+      - --debug
+      - --install
+      - --output=/app/async-api
+      - --force-write
+      - /app/async_api.yaml
+      - "@asyncapi/html-template@0.24.8"
+    volumes:
+      - ./go-exercises-backend/docs/async_api.yaml:/app/async_api.yaml
+      - ./go-exercises-backend/docs/async-api:/app/async-api
+
+  go-exercises-backend-asyncapi:
+    image: nginx:1.21.1-alpine
+    ports:
+      - 9092:80
+    volumes:
+      - ./go-exercises-backend/docs/async-api:/usr/share/nginx/html
+
+  swagger:
+    image: swaggerapi/swagger-ui:v3.24.0
+    environment:
+      SWAGGER_JSON: /etc/go-exercises-backend/swagger.json
+    ports:
+      - 9093:8080
+    volumes:
+      - ./go-exercises-backend/docs/swagger.json:/etc/go-exercises-backend/swagger.json
